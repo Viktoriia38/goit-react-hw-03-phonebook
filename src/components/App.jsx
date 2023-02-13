@@ -5,9 +5,11 @@ import { ContactForm } from './ContactForm/ContactForm';
 import css from './App.module.css';
 const { Component } = require('react');
 
+const LOCAL_KEY = 'contacts';
+
 export class App extends Component {
   state = {
-    contacts: [
+    contacts: this.getLocalData() ?? [
       { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
       { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
       { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
@@ -15,6 +17,17 @@ export class App extends Component {
     ],
     filter: '',
   };
+
+  getLocalData() {
+    const localData = JSON.parse(localStorage.getItem(LOCAL_KEY));
+    return localData;
+  }
+
+  componentDidUpdate(_, prevState) {
+    if (this.state.contacts.length !== prevState.contacts.length) {
+    }
+    localStorage.setItem(LOCAL_KEY, JSON.stringify(this.state.contacts));
+  }
 
   sendContact = contact => {
     const repeatName = this.state.contacts.find(({ name }) => {
@@ -26,7 +39,7 @@ export class App extends Component {
     } else {
       this.setState(prevState => {
         return {
-          contacts: [...prevState.contacts, { ...contact, id: nanoid() }],
+          contacts: [...prevState.contacts, { id: nanoid(), ...contact }],
         };
       });
     }
